@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+if [ "$3" == "" ]; then
+	lang="nor"
+else
+	lang=$3
+fi
+if [[ "$1" == "" || "$2" == "" ]]; then
+	filename=`basename "$0"`
+	echo "Usage $filename imgpath pdfname [lang=nor]"
+else
+	# get files | only keep filename | sort numerically for right pageorder| prepend full relative path + '/'
+	pages=$(ls -l $1 | grep -oh '[0-9]*[.]\(jpg\|png\)$' | sort -n | sed "s@^@$1\/@")
+	# add newline in variable
+	for i in $pages
+	do
+		p="$p
+$i"
+	done
+	# pipe pages variable to stdin and generate pdf
+	$(echo "$p" | tesseract stdin $2 -l $lang pdf)
+fi
+
+
